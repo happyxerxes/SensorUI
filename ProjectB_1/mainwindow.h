@@ -27,6 +27,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void mysql_init();
+
 
 private:
     Ui::MainWindow *ui;
@@ -36,15 +38,21 @@ private:
     WorkerThread *workerThread;
     WorkerThread_2 *workerThread_2;
     QSqlDatabase database;
-    int error_count, wifi_cut_flag=1;
+
+    int error_count = 0;
+    bool wifi_cut_flag=false;
+    bool is_wrong_passwd = false;
+    QString text;
+
 
 private slots:
     void on_openButton_clicked();
     void chulidata(char* buf);
     void on_openButton_2_clicked();
     void chulidata_2(char* buf);
-
     void timerUpdate(void);
+
+    void on_wifiOpenButton_clicked();
    // void sleep(unsigned int msecs);
 
 //signals:

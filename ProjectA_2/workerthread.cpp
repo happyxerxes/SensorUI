@@ -1,5 +1,7 @@
 #include "workerthread.h"
 
+#define ERRORCOUNT 10
+
 WorkerThread::WorkerThread(QObject *parent) :
     QThread(parent)
 {
@@ -22,11 +24,12 @@ void WorkerThread::run()
          if(allLockFlag == false){
 
              //open database
-             bool r = database.open();
-             if (r){  qDebug() << "Connect OK!";}
+             //bool r = database.open();
+             //if (r){  qDebug() << "Connect OK!";}
 
              while(1)
              {
+                 if(wifi_cut_flag == false){
                     //receive data from database
                     QSqlQuery sql_query;
                     QString update_sql = "select * from test where id = :id ";
@@ -40,19 +43,28 @@ void WorkerThread::run()
                             if(sql_query.exec())
                             {
                                 error_count=0;
+                                sql_query.next();
+                                data[2*i+0]= sql_query.value(4).toFloat();
+                                data[2*i+1]= sql_query.value(6).toFloat();
                             }
                             else{error_count++;}
 
-                            if(error_count > 10){
-                                data[4] = 1;
+                            if(error_count > ERRORCOUNT){
+
+                                //qDebug() << "error";
+                                if(is_wrong_passwd){data[4] = 2;}
+                                else{data[4] = 1;}
+
                                 emit resultReady(data);
+                                data[4] = 0;
+                                error_count=0;
+                                wifi_cut_flag = true;
                                 database.close();
-                                while(1){for(int i=0;i<9999;i++);}
+                                //database->free();
+                                break;
+                                //while(1){for(int i=0;i<9999;i++);}
                             }
 
-                            sql_query.next();
-                            data[2*i+0]= sql_query.value(4).toFloat();
-                            data[2*i+1]= sql_query.value(6).toFloat();
 
                         }
                     }
@@ -60,13 +72,19 @@ void WorkerThread::run()
                     emit resultReady(data);
 
 
-                  msleep(100);
+                    msleep(100);
+                }
 
+                //断网时
+                else{
+                    msleep(2000);
+                    emit resultReady(data);
+                }
 
 
              }
              //close database
-             database.close();
+             //database.close();
          }
     }
 
@@ -91,6 +109,7 @@ void WorkerThread::unlock(int i){
 void WorkerThread::sendId(QString id,int num){
     this->id[num] = id;
 }
+
 void WorkerThread::sql_init(QString passwd){
     //mysql init
         if (QSqlDatabase::contains("qt_sql_default_connection"))
@@ -100,10 +119,29 @@ void WorkerThread::sql_init(QString passwd){
         else
         {
             database = QSqlDatabase::addDatabase("QMYSQL");
-            qDebug() << "MYSQL driver valid" << database.isValid();
+            //qDebug() << "MYSQL driver valid" << database.isValid();
             database.setHostName("123.206.24.89");
             database.setUserName("test");
             database.setPassword(passwd);
             database.setDatabaseName("test");
+            database.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=2");
         }
+
+        qDebug() <<"111";
+        bool r=database.open();
+        qDebug() << QString::number(r);
+
+        //qDebug() <<"222";
+        //qDebug() << database.lastError().nativeErrorCode();
+
+        bool ok;
+        int i = database.lastError().nativeErrorCode().toInt(&ok,10);
+        if(i == 1045){
+            is_wrong_passwd = true;
+        }
+        else {};
+}
+
+void WorkerThread::reset_wifi_cut_flag(){
+    wifi_cut_flag=false;
 }

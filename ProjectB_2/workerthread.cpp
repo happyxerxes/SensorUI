@@ -1,4 +1,7 @@
 #include "workerthread.h"
+#include <QMessageBox>
+
+#define ERRORCOUNT 10
 
 WorkerThread::WorkerThread(QObject *parent) :
     QThread(parent)
@@ -22,17 +25,22 @@ void WorkerThread::run()
          if(allLockFlag == false){
 
              //open database
-             bool r = database.open();
+             //bool r = database.open();
+
+             /*
              if(!r){
                  //qDebug() << "1111";
                  data[30] = 1;
                  emit resultReady(data);
-                 while(1){for(int i=0;i<9999;i++);}
+                 //while(1){for(int i=0;i<9999;i++);}
              }
              //if (r){  qDebug() << "Connect OK!";}
+            */
 
              while(1)
              {
+                if(wifi_cut_flag == false){
+
                     //receive data from database
                     QSqlQuery sql_query;
                     QString update_sql = "select * from test where id = :id ";
@@ -46,36 +54,53 @@ void WorkerThread::run()
                             if(sql_query.exec())
                             {
                                 error_count=0;
+                                sql_query.next();
+                                data[5*i+0]= sql_query.value(1).toFloat();
+                                data[5*i+1]= sql_query.value(2).toFloat();
+                                data[5*i+2]= sql_query.value(3).toFloat();
+                                data[5*i+3]= sql_query.value(4).toFloat();
+                                data[5*i+4]= sql_query.value(5).toFloat();
                             }
+
                             else{error_count++;}
 
-                            if(error_count > 10){
-                                data[30] = 1;
+                            if(error_count > ERRORCOUNT){
+
+                                //qDebug() << "error";
+                                if(is_wrong_passwd){data[30] = 2;}
+                                else{data[30] = 1;}
+
                                 emit resultReady(data);
+                                data[30] = 0;
+                                error_count=0;
+                                wifi_cut_flag = true;
                                 database.close();
-                                while(1){for(int i=0;i<9999;i++);}
+                                //database->free();
+                                break;
+                                //while(1){for(int i=0;i<9999;i++);}
                             }
 
-                            sql_query.next();
-                            data[5*i+0]= sql_query.value(1).toFloat();
-                            data[5*i+1]= sql_query.value(2).toFloat();
-                            data[5*i+2]= sql_query.value(3).toFloat();
-                            data[5*i+3]= sql_query.value(4).toFloat();
-                            data[5*i+4]= sql_query.value(5).toFloat();
+
                         }
                     }
 
-                    if(allLockFlag == true)break;
                     emit resultReady(data);
 
+                    if(allLockFlag == true)break;
 
                     msleep(100);
 
+                }
 
+                //断网时
+                else{
+                    msleep(2000);
+                    emit resultReady(data);
+                }
 
              }
              //close database
-             database.close();
+             //database.close();
          }
     }
 
@@ -115,6 +140,27 @@ void WorkerThread::sql_init(QString passwd){
             database.setUserName("test");
             database.setPassword(passwd);
             database.setDatabaseName("test");
+            database.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=2");
         }
+
+        //qDebug() <<"111";
+        bool r=database.open();
+        //qDebug() << QString::number(r);
+
+        //qDebug() <<"222";
+        //qDebug() << database.lastError().nativeErrorCode();
+
+        bool ok;
+        int i = database.lastError().nativeErrorCode().toInt(&ok,10);
+        if(i == 1045){
+            is_wrong_passwd = true;
+        }
+        else {};
+
+
+}
+
+void WorkerThread::reset_wifi_cut_flag(){
+    wifi_cut_flag=false;
 }
 

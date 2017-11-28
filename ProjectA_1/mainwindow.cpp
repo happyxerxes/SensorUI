@@ -4,8 +4,42 @@
 #include <qdatetime.h>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <QVariant>
-#include <QProcess>
+//#include <QVariant>
+//#include <QProcess>
+
+#define ERRORCOUNT 60
+
+void MainWindow::mysql_init(){
+    //mysql init
+        if (QSqlDatabase::contains("qt_sql_default_connection"))
+        {
+            database = QSqlDatabase::database("qt_sql_default_connection");
+        }
+        else
+        {
+            database = QSqlDatabase::addDatabase("QMYSQL");
+            //qDebug() << "MYSQL driver valid" << database.isValid();
+            database.setHostName("123.206.24.89");
+            database.setUserName("test");
+            database.setPassword(text);
+            database.setDatabaseName("test");
+            database.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=2");
+        }
+
+        //qDebug() <<"111";
+        bool r=database.open();
+        //qDebug() << QString::number(r);
+
+        //qDebug() <<"222";
+        //qDebug() << database.lastError().nativeErrorCode();
+
+        bool ok;
+        int i = database.lastError().nativeErrorCode().toInt(&ok,10);
+        if(i == 1045){
+            is_wrong_passwd = true;
+        }
+        else {};
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,38 +47,29 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 //password
-    QString text = QInputDialog::getText(NULL, "提示",
+    text = QInputDialog::getText(NULL, "提示",
                                             "请输入数据库密码:",
                                             QLineEdit::Password,    //输入的是密码，不显示明文
                                             //QLineEdit::Normal,          //输入框明文
                                             NULL
                                             );
 
-//mysql init
-    if (QSqlDatabase::contains("qt_sql_default_connection"))
-    {
-        database = QSqlDatabase::database("qt_sql_default_connection");
-    }
-    else
-    {
-        database = QSqlDatabase::addDatabase("QMYSQL");
-        //qDebug() << "MYSQL driver valid" << database.isValid();
-        database.setHostName("123.206.24.89");
-        database.setUserName("test");
-        database.setPassword(text);
-        database.setDatabaseName("test");
-    }
+    mysql_init();
+
 
 //show time
     QTimer *timer = new QTimer();
     connect(timer,SIGNAL(timeout()),this,SLOT(timerUpdate()));
     timer->start(1000);
+
 //ui init
+    ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText("正常连接");
+    ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
 
     ui->flaglabel_1->clear();
-    ui->flaglabel_1->setStyleSheet("background-color:red;");
+    ui->flaglabel_1->setStyleSheet("border-radius:8px;background-color:red;");
     ui->flaglabel_2->clear();
-    ui->flaglabel_2->setStyleSheet("background-color:red;");
+    ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:red;");
 
     ui->label_25->setVisible(false);
     ui->labelTime->setVisible(false);
@@ -60,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->lineEdit_id_1->setFont(QFont("Timers" , 20 ,  QFont::Bold));
 
-    ui->lineEdit_id_1->setText("A2");
+    ui->lineEdit_id_1->setText("A1");
     ui->lineEdit_id_1->setEnabled(false);
     ui->lineEdit_id_1->setVisible(false);
     ui->label_2->setVisible(false);
@@ -120,12 +145,32 @@ void MainWindow::chulidata(char* buf)
     {
         error_count=0;
     }
-    else{error_count++;}
+    else{
+        if(wifi_cut_flag){
+           error_count=0;
 
-    if(error_count > 10 && wifi_cut_flag == 1){
-        wifi_cut_flag=0;
-        if(database.isOpen()) database.close();
-        QMessageBox::information(this,"提示","网络断开，请重新打开软件!");
+        }
+        else{
+           error_count++;
+        }
+    }
+
+    if(error_count > ERRORCOUNT && wifi_cut_flag == false){
+        wifi_cut_flag=true;
+        error_count = 0;
+
+        if(is_wrong_passwd){
+            QMessageBox::information(this,"提示2","数据库密码错误，请重启软件后输入正确密码!");
+        }
+        else{
+            QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
+        }
+
+        ui->wifiOpenButton->setEnabled(true);
+        ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:red;");
+
+
+        database.close();
         //this->close();
     }
 }
@@ -151,12 +196,32 @@ void MainWindow::chulidata_2(char* buf)
     {
         error_count=0;
     }
-    else{error_count++;}
+    else{
+        if(wifi_cut_flag){
+           error_count=0;
 
-    if(error_count > 10 && wifi_cut_flag == 1){
-        wifi_cut_flag=0;
-        if(database.isOpen()) database.close();
-        QMessageBox::information(this,"提示","网络断开，请重新打开软件!");
+        }
+        else{
+           error_count++;
+        }
+    }
+
+    if(error_count > ERRORCOUNT && wifi_cut_flag == false){
+        wifi_cut_flag=true;
+        error_count = 0;
+
+        if(is_wrong_passwd){
+            QMessageBox::information(this,"提示2","数据库密码错误，请重启软件后输入正确密码!");
+        }
+        else{
+            QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
+        }
+
+        ui->wifiOpenButton->setEnabled(true);
+        ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:red;");
+
+
+        database.close();
         //this->close();
     }
 }
@@ -189,9 +254,9 @@ void MainWindow::on_openButton_clicked()
         ui->lineEdit_id_1->setEnabled(false);
         ui->PortBox->setEnabled(false);
         ui->openButton->setText(tr("关闭串口"));
-        ui->flaglabel_1->setStyleSheet("background-color:green;");
+        ui->flaglabel_1->setStyleSheet("border-radius:8px;background-color:green;");
 
-
+/*
         //open database
         if(!database.isOpen()){
 
@@ -210,7 +275,7 @@ void MainWindow::on_openButton_clicked()
             retStr.clear();
 
         }
-
+*/
 
     }
     else
@@ -224,7 +289,7 @@ void MainWindow::on_openButton_clicked()
         //if(lockflag && lockflag_2){ui->lineEdit_id_1->setEnabled(true);}
         ui->PortBox->setEnabled(true);
         ui->openButton->setText(tr("打开串口"));
-        ui->flaglabel_1->setStyleSheet("background-color:red;");
+        ui->flaglabel_1->setStyleSheet("border-radius:8px;background-color:red;");
 
 
 
@@ -252,9 +317,9 @@ void MainWindow::on_openButton_2_clicked()
         ui->lineEdit_id_1->setEnabled(false);
         ui->PortBox_2->setEnabled(false);
         ui->openButton_2->setText(tr("关闭串口"));
-        ui->flaglabel_2->setStyleSheet("background-color:green;");
+        ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:green;");
 
-
+/*
         //open database
         if(!database.isOpen()){
 
@@ -273,7 +338,7 @@ void MainWindow::on_openButton_2_clicked()
             retStr.clear();
 
         }
-
+*/
 
     }
     else
@@ -287,7 +352,7 @@ void MainWindow::on_openButton_2_clicked()
 
         ui->PortBox_2->setEnabled(true);
         ui->openButton_2->setText(tr("打开串口"));
-        ui->flaglabel_2->setStyleSheet("background-color:red;");
+        ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:red;");
 
 
          //close database
@@ -296,6 +361,19 @@ void MainWindow::on_openButton_2_clicked()
             database.close();
         }
     }
+}
+
+void MainWindow::on_wifiOpenButton_clicked(){
+     //qDebug() << "kick";
+    mysql_init();
+
+    wifi_cut_flag = false;
+    //workerThread->reset_wifi_cut_flag();
+
+    ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText(tr("正常连接"));
+    ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
+
+
 }
 
 void MainWindow::timerUpdate(void)

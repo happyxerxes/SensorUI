@@ -431,7 +431,7 @@
      <string notr="true">background: transparent;</string>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:36pt; font-weight:600;&quot;&gt;2号推车式汽车尾气二氧化碳排放量检测器&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:36pt; font-weight:600;&quot;&gt;1号推车式汽车尾气二氧化碳排放量检测器&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_27">
@@ -447,7 +447,7 @@
      <string notr="true">background: transparent;</string>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;No.2 Trolley-style Detector for CO2 in Vehicle Exhaust&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;No.1 Trolley-style Detector for CO2 in Vehicle Exhaust&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_30">
@@ -514,18 +514,47 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;2017年研制&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QLabel" name="flaglabel_1">
+   <widget class="QPushButton" name="wifiOpenButton">
     <property name="geometry">
      <rect>
-      <x>526</x>
-      <y>296</y>
-      <width>10</width>
-      <height>10</height>
+      <x>1195</x>
+      <y>625</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>重新连接</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="flaglabel_dbstatus">
+    <property name="geometry">
+     <rect>
+      <x>1280</x>
+      <y>630</y>
+      <width>20</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">background-color:green;
+border-radius:10px</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="flaglabel_1">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>292</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -535,15 +564,14 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_2">
     <property name="geometry">
      <rect>
-      <x>1006</x>
-      <y>296</y>
-      <width>10</width>
-      <height>10</height>
+      <x>1010</x>
+      <y>292</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -572,6 +600,8 @@ background-color:red;</string>
    <zorder>label_26</zorder>
    <zorder>label_12</zorder>
    <zorder>label_4</zorder>
+   <zorder>wifiOpenButton</zorder>
+   <zorder>flaglabel_dbstatus</zorder>
    <zorder>flaglabel_1</zorder>
    <zorder>flaglabel_2</zorder>
   </widget>

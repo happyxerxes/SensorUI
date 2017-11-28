@@ -940,18 +940,47 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;北京市朝阳区&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QLabel" name="flaglabel_1">
+   <widget class="QPushButton" name="wifiOpenButton">
     <property name="geometry">
      <rect>
-      <x>366</x>
-      <y>256</y>
-      <width>10</width>
-      <height>10</height>
+      <x>1315</x>
+      <y>735</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>重新连接</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="flaglabel_dbstatus">
+    <property name="geometry">
+     <rect>
+      <x>1400</x>
+      <y>740</y>
+      <width>20</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">background-color:green;
+border-radius:10px</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="flaglabel_1">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>254</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -961,15 +990,14 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_2">
     <property name="geometry">
      <rect>
-      <x>506</x>
-      <y>256</y>
-      <width>10</width>
-      <height>10</height>
+      <x>510</x>
+      <y>254</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -979,15 +1007,14 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_3">
     <property name="geometry">
      <rect>
-      <x>716</x>
-      <y>256</y>
-      <width>10</width>
-      <height>10</height>
+      <x>720</x>
+      <y>254</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -997,15 +1024,14 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_4">
     <property name="geometry">
      <rect>
-      <x>856</x>
-      <y>256</y>
-      <width>10</width>
-      <height>10</height>
+      <x>860</x>
+      <y>254</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -1015,15 +1041,14 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_5">
     <property name="geometry">
      <rect>
-      <x>1066</x>
-      <y>256</y>
-      <width>10</width>
-      <height>10</height>
+      <x>1070</x>
+      <y>254</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -1033,15 +1058,14 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_6">
     <property name="geometry">
      <rect>
-      <x>1206</x>
-      <y>256</y>
-      <width>10</width>
-      <height>10</height>
+      <x>1210</x>
+      <y>254</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">

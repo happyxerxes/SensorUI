@@ -23,7 +23,9 @@ private:
 
     bool lockflag[6];
     WorkerThread *workerThread;
-    int wifi_cut_flag=1;
+
+    bool wifi_cut_flag = false;
+    QString text;//password
 
 private slots:
     void on_openButton_1_clicked();
@@ -32,6 +34,9 @@ private slots:
     void on_openButton_4_clicked();
     void on_openButton_5_clicked();
     void on_openButton_6_clicked();
+
+    void on_wifiOpenButton_clicked();
+
 
     void chulidata(float* data);
 

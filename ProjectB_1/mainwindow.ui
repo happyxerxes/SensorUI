@@ -743,7 +743,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;北京市海淀区&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;北京市朝阳区&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -814,15 +814,14 @@
    <widget class="QLabel" name="flaglabel_1">
     <property name="geometry">
      <rect>
-      <x>446</x>
-      <y>176</y>
-      <width>10</width>
-      <height>10</height>
+      <x>450</x>
+      <y>174</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
@@ -832,19 +831,48 @@ background-color:red;</string>
    <widget class="QLabel" name="flaglabel_2">
     <property name="geometry">
      <rect>
-      <x>1046</x>
-      <y>176</y>
-      <width>10</width>
-      <height>10</height>
+      <x>1050</x>
+      <y>174</y>
+      <width>16</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">boder: 2px;
-border-color: rgb(0, 0, 0);
+     <string notr="true">border-radius:8px;
 background-color:red;</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="flaglabel_dbstatus">
+    <property name="geometry">
+     <rect>
+      <x>1295</x>
+      <y>625</y>
+      <width>20</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:green;
+border-radius:10px</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="wifiOpenButton">
+    <property name="geometry">
+     <rect>
+      <x>1210</x>
+      <y>620</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>重新连接</string>
     </property>
    </widget>
   </widget>

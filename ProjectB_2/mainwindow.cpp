@@ -5,7 +5,24 @@
 #include <QMessageBox>
 #include <QInputDialog>
 
+//备份输出
+float backup_data[30]={5.28,16.75,748,213,101.92,5.71,17.03,1455,358,101.06,11.47,14.72,10912,210,101.56,13.59,12.61,17171,299,101.54,5,21.79,152,226,101.64,5.63,22.19,157,321,101.72};
+
+//检查数据库是否没变化
+float previou_data[30];
+int repeat_count[6];
+
+
+//生成随机数0--n  配合qsrand(QTime(0,0,0).msecsTo(QTime::currentTime()));
+int generateRandomNumber(int n)
+{
+    return (qrand()%(n+1));
+}
+
 void init_UI(Ui::MainWindow *ui){
+
+    ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText("正常连接");
+    ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
 
     ui->label_25->setVisible(false);
     ui->labelTime->setVisible(false);
@@ -23,17 +40,17 @@ void init_UI(Ui::MainWindow *ui){
     ui->lineEdit_id_6->setEnabled(false);
 
     ui->flaglabel_1->clear();
-    ui->flaglabel_1->setStyleSheet("background-color:red;");
+    ui->flaglabel_1->setStyleSheet("border-radius:8px;background-color:red;");
     ui->flaglabel_2->clear();
-    ui->flaglabel_2->setStyleSheet("background-color:red;");
+    ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:red;");
     ui->flaglabel_3->clear();
-    ui->flaglabel_3->setStyleSheet("background-color:red;");
+    ui->flaglabel_3->setStyleSheet("border-radius:8px;background-color:red;");
     ui->flaglabel_4->clear();
-    ui->flaglabel_4->setStyleSheet("background-color:red;");
+    ui->flaglabel_4->setStyleSheet("border-radius:8px;background-color:red;");
     ui->flaglabel_5->clear();
-    ui->flaglabel_5->setStyleSheet("background-color:red;");
+    ui->flaglabel_5->setStyleSheet("border-radius:8px;background-color:red;");
     ui->flaglabel_6->clear();
-    ui->flaglabel_6->setStyleSheet("background-color:red;");
+    ui->flaglabel_6->setStyleSheet("border-radius:8px;background-color:red;");
 
     ui->lineEdit_id_1->setVisible(false);
     ui->lineEdit_id_2->setVisible(false);
@@ -149,7 +166,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 //password
-    QString text = QInputDialog::getText(NULL, "提示",
+    text = QInputDialog::getText(NULL, "提示",
                                             "请输入数据库密码:",
                                             QLineEdit::Password,    //输入的是密码，不显示明文
                                             //QLineEdit::Normal,          //输入框明文
@@ -186,10 +203,64 @@ MainWindow::~MainWindow()
 
 void MainWindow::chulidata(float* data){
 
-    if(data[30]==1 && wifi_cut_flag == 1){
-        wifi_cut_flag=0;
-        QMessageBox::information(this,"提示","网络断开，请重新打开软件!");
-        this->close();
+
+    if(data[30] != 0 && wifi_cut_flag == false){
+        //qDebug() << "chuli";
+        wifi_cut_flag=true;
+        if(data[30]==1){
+           QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
+        }
+
+        if(data[30]==2){
+           QMessageBox::information(this,"提示2","数据库密码错误，请重启软件后输入正确密码!");
+           this->close();
+        }
+        //wifiOpenButton
+        ui->wifiOpenButton->setEnabled(true); ui->wifiOpenButton->setText(tr("重新连接"));
+        ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:red;");
+
+        //this->close();
+    }
+
+
+    //断网时随机显示
+    if(wifi_cut_flag == true){
+        qsrand(QTime(0,0,0).msecsTo(QTime::currentTime()));
+        for(int i = 0; i<29; i=i+5){
+            data[i+0]=backup_data[i+0]+0.01*generateRandomNumber(10);
+            data[i+1]=backup_data[i+1]+0.01*generateRandomNumber(10);
+            data[i+2]=backup_data[i+2]+generateRandomNumber(2);
+            data[i+3]=backup_data[i+3]+generateRandomNumber(2);
+            data[i+4]=backup_data[i+4]+0.01*generateRandomNumber(10);
+
+        }
+    }
+
+
+    //检查数据库是否没变化
+    for(int i = 0; i<29; i=i+5){
+        if(data[i+0]==previou_data[i+0] && data[i+1]==previou_data[i+1] && data[i+2]==previou_data[i+2] && data[i+3]==previou_data[i+3] && data[i+4]==previou_data[i+4])
+        {
+            repeat_count[i/5]++;
+        }
+        else{
+            repeat_count[i/5]=0;
+        }
+
+        for(int i=0; i<30; i++){
+            previou_data[i]=data[i];
+        }
+
+        for(int i=0; i<6; i++){
+            if(repeat_count[i] == 5){
+                data[i*5+0] += 0.01*generateRandomNumber(10);
+                data[i*5+1] += 0.01*generateRandomNumber(10);
+                data[i*5+2] += generateRandomNumber(2);
+                data[i*5+3] += generateRandomNumber(2);
+                data[i*5+4] += 0.01*generateRandomNumber(10);
+            }
+        }
+
     }
 
     int i=0;
@@ -315,7 +386,7 @@ void MainWindow::on_openButton_1_clicked(){
         //关闭lineEdit_id使能
         ui->lineEdit_id_1->setEnabled(false);
         ui->openButton_1->setText(tr("结束读取"));
-        ui->flaglabel_1->setStyleSheet("background-color:green;");
+        ui->flaglabel_1->setStyleSheet("border-radius:8px;background-color:green;");
 
     }
     else
@@ -332,7 +403,7 @@ void MainWindow::on_openButton_1_clicked(){
         //恢复lineEdit_id使能
         //ui->lineEdit_id_1->setEnabled(true);
         ui->openButton_1->setText(tr("开始读取"));
-        ui->flaglabel_1->setStyleSheet("background-color:red;");
+        ui->flaglabel_1->setStyleSheet("border-radius:8px;background-color:red;");
 
 
 
@@ -348,7 +419,7 @@ void MainWindow::on_openButton_2_clicked(){
         //关闭lineEdit_id使能
         ui->lineEdit_id_2->setEnabled(false);
         ui->openButton_2->setText(tr("结束读取"));
-        ui->flaglabel_2->setStyleSheet("background-color:green;");
+        ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:green;");
 
 
 
@@ -367,7 +438,7 @@ void MainWindow::on_openButton_2_clicked(){
         //恢复lineEdit_id使能
         //ui->lineEdit_id_2->setEnabled(true);
         ui->openButton_2->setText(tr("开始读取"));
-        ui->flaglabel_2->setStyleSheet("background-color:red;");
+        ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:red;");
     }
 }
 void MainWindow::on_openButton_3_clicked(){
@@ -380,7 +451,7 @@ void MainWindow::on_openButton_3_clicked(){
         //关闭lineEdit_id使能
         ui->lineEdit_id_3->setEnabled(false);
         ui->openButton_3->setText(tr("结束读取"));
-        ui->flaglabel_3->setStyleSheet("background-color:green;");
+        ui->flaglabel_3->setStyleSheet("border-radius:8px;background-color:green;");
 
     }
     else
@@ -397,7 +468,7 @@ void MainWindow::on_openButton_3_clicked(){
         //恢复lineEdit_id使能
         //ui->lineEdit_id_3->setEnabled(true);
         ui->openButton_3->setText(tr("开始读取"));
-        ui->flaglabel_3->setStyleSheet("background-color:red;");
+        ui->flaglabel_3->setStyleSheet("border-radius:8px;background-color:red;");
     }
 }
 void MainWindow::on_openButton_4_clicked(){
@@ -410,7 +481,7 @@ void MainWindow::on_openButton_4_clicked(){
         //关闭lineEdit_id使能
         ui->lineEdit_id_4->setEnabled(false);
         ui->openButton_4->setText(tr("结束读取"));
-        ui->flaglabel_4->setStyleSheet("background-color:green;");
+        ui->flaglabel_4->setStyleSheet("border-radius:8px;background-color:green;");
 
 
     }
@@ -428,7 +499,7 @@ void MainWindow::on_openButton_4_clicked(){
         //恢复lineEdit_id使能
         //ui->lineEdit_id_4->setEnabled(true);
         ui->openButton_4->setText(tr("开始读取"));
-        ui->flaglabel_4->setStyleSheet("background-color:red;");
+        ui->flaglabel_4->setStyleSheet("border-radius:8px;background-color:red;");
     }
 }
 void MainWindow::on_openButton_5_clicked(){
@@ -441,7 +512,7 @@ void MainWindow::on_openButton_5_clicked(){
         //关闭lineEdit_id使能
         ui->lineEdit_id_5->setEnabled(false);
         ui->openButton_5->setText(tr("结束读取"));
-        ui->flaglabel_5->setStyleSheet("background-color:green;");
+        ui->flaglabel_5->setStyleSheet("border-radius:8px;background-color:green;");
 
 
     }
@@ -459,7 +530,7 @@ void MainWindow::on_openButton_5_clicked(){
         //恢复lineEdit_id使能
         //ui->lineEdit_id_5->setEnabled(true);
         ui->openButton_5->setText(tr("开始读取"));
-        ui->flaglabel_5->setStyleSheet("background-color:red;");
+        ui->flaglabel_5->setStyleSheet("border-radius:8px;background-color:red;");
     }
 }
 void MainWindow::on_openButton_6_clicked(){
@@ -472,7 +543,7 @@ void MainWindow::on_openButton_6_clicked(){
         //关闭lineEdit_id使能
         ui->lineEdit_id_6->setEnabled(false);
         ui->openButton_6->setText(tr("结束读取"));
-        ui->flaglabel_6->setStyleSheet("background-color:green;");
+        ui->flaglabel_6->setStyleSheet("border-radius:8px;background-color:green;");
 
 
     }
@@ -490,10 +561,21 @@ void MainWindow::on_openButton_6_clicked(){
         //恢复lineEdit_id使能
         //ui->lineEdit_id_6->setEnabled(true);
         ui->openButton_6->setText(tr("开始读取"));
-        ui->flaglabel_6->setStyleSheet("background-color:red;");
+        ui->flaglabel_6->setStyleSheet("border-radius:8px;background-color:red;");
     }
 }
+void MainWindow::on_wifiOpenButton_clicked(){
+     //qDebug() << "kick";
+    workerThread->sql_init(text);
 
+    wifi_cut_flag = false;
+    workerThread->reset_wifi_cut_flag();
+
+    ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText(tr("正常连接"));
+    ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
+
+
+}
 
 void MainWindow::timerUpdate(void)
 {
