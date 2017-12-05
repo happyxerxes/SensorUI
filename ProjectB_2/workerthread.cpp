@@ -53,24 +53,49 @@ void WorkerThread::run()
                             msleep(100);
                             if(sql_query.exec())
                             {
-                                error_count=0;
+
                                 sql_query.next();
+
+                                error_count=0;
                                 data[5*i+0]= sql_query.value(1).toFloat();
                                 data[5*i+1]= sql_query.value(2).toFloat();
                                 data[5*i+2]= sql_query.value(3).toFloat();
                                 data[5*i+3]= sql_query.value(4).toFloat();
                                 data[5*i+4]= sql_query.value(5).toFloat();
+
+                                /*
+
+                                if(sql_query.value(0).toString().compare(id[i]) != 0){
+                                    error_count++;
+                                    qDebug() <<"222";
+                                    //qDebug() <<" sql_query.value(0).toString().compare(id[i])";
+                                }
+
+                                else{
+                                    error_count=0;
+                                    data[5*i+0]= sql_query.value(1).toFloat();
+                                    data[5*i+1]= sql_query.value(2).toFloat();
+                                    data[5*i+2]= sql_query.value(3).toFloat();
+                                    data[5*i+3]= sql_query.value(4).toFloat();
+                                    data[5*i+4]= sql_query.value(5).toFloat();
+                                }
+                                */
+
+
                             }
 
                             else{error_count++;}
 
                             if(error_count > ERRORCOUNT){
 
-                                //qDebug() << "error";
+                                qDebug() << "error";
+
                                 if(is_wrong_passwd){data[30] = 2;}
                                 else{data[30] = 1;}
 
                                 emit resultReady(data);
+                                msleep(200);
+
                                 data[30] = 0;
                                 error_count=0;
                                 wifi_cut_flag = true;
@@ -83,6 +108,7 @@ void WorkerThread::run()
 
                         }
                     }
+
 
                     emit resultReady(data);
 

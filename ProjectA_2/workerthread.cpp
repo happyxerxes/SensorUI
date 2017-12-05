@@ -56,6 +56,9 @@ void WorkerThread::run()
                                 else{data[4] = 1;}
 
                                 emit resultReady(data);
+                                msleep(200);
+
+
                                 data[4] = 0;
                                 error_count=0;
                                 wifi_cut_flag = true;

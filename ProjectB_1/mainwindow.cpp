@@ -7,7 +7,7 @@
 //#include <QVariant>
 //#include <QProcess>
 
-#define ERRORCOUNT 10
+#define ERRORCOUNT 150
 
 void MainWindow::mysql_init(){
     //mysql init
@@ -71,8 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->label_25->setVisible(false);
     ui->labelTime->setVisible(false);
-    ui->lineEdit_id_1->setText("Bc1");
-    ui->lineEdit_id_2->setText("Bc2");
+    ui->lineEdit_id_1->setText("Ba1");
+    ui->lineEdit_id_2->setText("Ba2");
     ui->lineEdit_id_1->setEnabled(false);
     ui->lineEdit_id_2->setEnabled(false);
     ui->lineEdit_id_1->setVisible(false);

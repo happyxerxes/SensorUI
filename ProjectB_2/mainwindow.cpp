@@ -202,10 +202,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::chulidata(float* data){
+    qDebug() << "chuli";
 
 
     if(data[30] != 0 && wifi_cut_flag == false){
-        //qDebug() << "chuli";
+
+        qDebug() << "chulierror";
+
         wifi_cut_flag=true;
         if(data[30]==1){
            QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
