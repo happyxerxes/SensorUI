@@ -126,10 +126,26 @@ MainWindow::~MainWindow()
 
 void MainWindow::chulidata(float* data){
 
+    //重新连接
+    if(data[4] == 99){
+        //qDebug() << "kick";
+       workerThread->sql_init(text);
+       qDebug() << "reconnect";
+       wifi_cut_flag = false;
+       workerThread->reset_wifi_cut_flag();
+
+       ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText(tr("正常连接"));
+       ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
+
+       data[4] = 0;
+
+    }
+
+
     if(data[4] != 0 && wifi_cut_flag == false){
         wifi_cut_flag=true;
         if(data[4]==1){
-           QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
+           //QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
         }
 
         if(data[4]==2){
@@ -137,12 +153,12 @@ void MainWindow::chulidata(float* data){
            this->close();
         }
         //wifiOpenButton
-        ui->wifiOpenButton->setEnabled(true); ui->wifiOpenButton->setText(tr("重新连接"));
+        ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText(tr("重新连接"));
         ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:red;");
         //this->close();
     }
 
-
+/*
     //断网时随机显示
     if(wifi_cut_flag == true){
         qsrand(QTime(0,0,0).msecsTo(QTime::currentTime()));
@@ -151,7 +167,22 @@ void MainWindow::chulidata(float* data){
             data[i+1]=backup_data[i+1]+0.01*generateRandomNumber(10);
         }
     }
+*/
 
+    for(int i=0; i<4; i++){
+        previou_data[i]=data[i];
+    }
+
+    //断网时显示最后一次数值
+    if(wifi_cut_flag == true){
+
+        for(int i = 0; i<3; i=i+2){
+            data[i+0]=previou_data[i+0];
+            data[i+1]=previou_data[i+1];
+
+        }
+    }
+/*
     //检查数据库是否没变化
     for(int i = 0; i<3; i=i+2){
         if(data[i+0]==previou_data[i+0] && data[i+1]==previou_data[i+1])
@@ -175,7 +206,7 @@ void MainWindow::chulidata(float* data){
         }
 
     }
-
+*/
     int i=0;
     if(lockflag[0]==false){
         QString str = QString::number(data[i+0], 'f', 0);

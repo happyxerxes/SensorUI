@@ -120,13 +120,21 @@ void WorkerThread::run()
 
                 //断网时
                 else{
-                    msleep(2000);
+
+                    msleep(5000);
+                    data[30] = 99;
+
                     emit resultReady(data);
+
+
+
                 }
 
              }
              //close database
              //database.close();
+
+
          }
     }
 
@@ -189,4 +197,6 @@ void WorkerThread::sql_init(QString passwd){
 void WorkerThread::reset_wifi_cut_flag(){
     wifi_cut_flag=false;
 }
+
+
 

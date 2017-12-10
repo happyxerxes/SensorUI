@@ -80,8 +80,10 @@ void WorkerThread::run()
 
                 //断网时
                 else{
-                    msleep(2000);
-                    emit resultReady(data);
+                     msleep(5000);
+                     data[4] = 99;
+
+                     emit resultReady(data);
                 }
 
 

@@ -25,6 +25,7 @@ public:
     void reset_wifi_cut_flag();
 
 
+
 protected:
 
     virtual void run();
@@ -32,6 +33,7 @@ protected:
     bool allLockFlag = true;
     QString id[6];
     QSqlDatabase database;
+
 
     bool wifi_cut_flag = false;
     bool is_wrong_passwd = false;

@@ -7,7 +7,14 @@
 //#include <QVariant>
 //#include <QProcess>
 
-#define ERRORCOUNT 150
+#define ERRORCOUNT 5
+
+int ttime_pre_1 = 0;
+int ttime_pre_2 = 0;
+int reconnect_time_pre = 0;
+int reconnect_time;
+
+QDateTime time;
 
 void MainWindow::mysql_init(){
     //mysql init
@@ -135,12 +142,46 @@ void MainWindow::chulidata(char* buf)
     ui->lineEdit_co2->insert(co2S);
 
 
+    time = QDateTime::currentDateTime();
+    QString ttime = time.toString("yyyy-MM-dd hh:mm:ss");
+    int tttime =time.toTime_t();
+    QString tyear = time.toString("yyyy");
+    QString tmonth = time.toString("MM");
+    QString tday = time.toString("dd");
+    QString thour = time.toString("hh");
+
+    if( tttime-ttime_pre_1 > 300){
+
+
+            ttime_pre_1 = tttime;
+
+            //send co2 to database
+            QSqlQuery sql_query;
+            //QString update_sql = "INSERT INTO test  VALUES (:id,NULL,NULL,NULL,:co2,NULL,NULL) ON DUPLICATE KEY UPDATE co2=:co2";
+            QString update_sql = "INSERT INTO stat (id,wd,sd,gzd,co2,dqyl,fs,ttime,tyear,tmonth,tday,thour) VALUES (:id,NULL,NULL,NULL,:co2,NULL,NULL,:ttime,:tyear,:tmonth,:tday,:thour)";
+            sql_query.prepare(update_sql);
+            sql_query.bindValue(":id", ui->lineEdit_id_1->text());
+            sql_query.bindValue(":co2", co2);
+            sql_query.bindValue(":ttime", ttime);
+            sql_query.bindValue(":tyear", tyear);
+            sql_query.bindValue(":tmonth", tmonth);
+            sql_query.bindValue(":tday", tday);
+            sql_query.bindValue(":thour", thour);
+
+            sql_query.exec();
+
+     }
+
+
     //send co2 to database
     QSqlQuery sql_query;
-    QString update_sql = "INSERT INTO test  VALUES (:id,NULL,NULL,NULL,:co2,NULL,NULL) ON DUPLICATE KEY UPDATE co2=:co2";
+    QString update_sql = "INSERT INTO test  VALUES (:id,NULL,NULL,NULL,:co2,NULL,NULL,:ttime) ON DUPLICATE KEY UPDATE co2=:co2,ttime=:ttime";
+    //QString update_sql = "INSERT INTO stat (id,wd,sd,gzd,co2,dqyl,fs,ttime,tyear,tmonth,tday,thour) VALUES (:id,NULL,NULL,NULL,:co2,NULL,NULL,:ttime,:tyear,:tmonth,:tday,:thour)";
     sql_query.prepare(update_sql);
     sql_query.bindValue(":id", ui->lineEdit_id_1->text());
     sql_query.bindValue(":co2", co2);
+    sql_query.bindValue(":ttime", ttime);
+
     if(sql_query.exec())
     {
         error_count=0;
@@ -163,16 +204,34 @@ void MainWindow::chulidata(char* buf)
             QMessageBox::information(this,"提示2","数据库密码错误，请重启软件后输入正确密码!");
         }
         else{
-            QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
+            //QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
         }
 
-        ui->wifiOpenButton->setEnabled(true);
+        ui->wifiOpenButton->setEnabled(false);
         ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:red;");
 
 
         database.close();
         //this->close();
     }
+
+    time = QDateTime::currentDateTime();
+    reconnect_time = time.toTime_t();
+
+    if(wifi_cut_flag == true){
+        if(reconnect_time-reconnect_time_pre > 30){
+            reconnect_time_pre = reconnect_time;
+
+            mysql_init();
+
+            wifi_cut_flag = false;
+
+            ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText(tr("正常连接"));
+            ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
+        }
+    }
+
+
 }
 void MainWindow::chulidata_2(char* buf)
 {
@@ -185,13 +244,45 @@ void MainWindow::chulidata_2(char* buf)
     ui->lineEdit_fs->insert(fsS);
 
 
+    time = QDateTime::currentDateTime();
+    QString ttime = time.toString("yyyy-MM-dd hh:mm:ss");
+    int tttime =time.toTime_t();
+    QString tyear = time.toString("yyyy");
+    QString tmonth = time.toString("MM");
+    QString tday = time.toString("dd");
+    QString thour = time.toString("hh");
+
+    //qDebug() << QString::number(ttime);
+    //qDebug() << QString::number(ttime-ttime_pre);
+
+    if( tttime-ttime_pre_2 > 300){
+
+            ttime_pre_2 = tttime;
+            QSqlQuery sql_query;
+            //QString update_sql = "INSERT INTO test  VALUES (:id,NULL,NULL,NULL,NULL,NULL,:fs) ON DUPLICATE KEY UPDATE fs=:fs";
+            QString update_sql = "INSERT INTO stat (id,wd,sd,gzd,co2,dqyl,fs,ttime,tyear,tmonth,tday,thour) VALUES (:id,NULL,NULL,NULL,NULL,NULL,:fs,:ttime,:tyear,:tmonth,:tday,:thour)";
+
+            sql_query.prepare(update_sql);
+            sql_query.bindValue(":id", ui->lineEdit_id_1->text());
+            sql_query.bindValue(":fs", fs);
+            sql_query.bindValue(":ttime", ttime);
+            sql_query.bindValue(":tyear", tyear);
+            sql_query.bindValue(":tmonth", tmonth);
+            sql_query.bindValue(":tday", tday);
+            sql_query.bindValue(":thour", thour);
+
+            sql_query.exec();
+
+     }
+
 
     //send fs to database
     QSqlQuery sql_query;
-    QString update_sql = "INSERT INTO test  VALUES (:id,NULL,NULL,NULL,NULL,NULL,:fs) ON DUPLICATE KEY UPDATE fs=:fs";
+    QString update_sql = "INSERT INTO test  VALUES (:id,NULL,NULL,NULL,NULL,NULL,:fs,:ttime) ON DUPLICATE KEY UPDATE fs=:fs,ttime=:ttime";
     sql_query.prepare(update_sql);
     sql_query.bindValue(":id", ui->lineEdit_id_1->text());
     sql_query.bindValue(":fs", fs);
+    sql_query.bindValue(":ttime", ttime);
     if(sql_query.exec())
     {
         error_count=0;
@@ -214,15 +305,32 @@ void MainWindow::chulidata_2(char* buf)
             QMessageBox::information(this,"提示2","数据库密码错误，请重启软件后输入正确密码!");
         }
         else{
-            QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
+            //QMessageBox::information(this,"提示1","网络连接错误，请检查网络后重新连接数据库!");
         }
 
-        ui->wifiOpenButton->setEnabled(true);
+        ui->wifiOpenButton->setEnabled(false);
         ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:red;");
 
 
         database.close();
         //this->close();
+    }
+
+    time = QDateTime::currentDateTime();
+    reconnect_time = time.toTime_t();
+
+    if(wifi_cut_flag == true){
+        if(reconnect_time-reconnect_time_pre > 30){
+            reconnect_time_pre = reconnect_time;
+
+
+            mysql_init();
+
+            wifi_cut_flag = false;
+
+            ui->wifiOpenButton->setEnabled(false); ui->wifiOpenButton->setText(tr("正常连接"));
+            ui->flaglabel_dbstatus->setStyleSheet("border-radius:10px;background-color:green;");
+        }
     }
 }
 
@@ -293,11 +401,7 @@ void MainWindow::on_openButton_clicked()
 
 
 
-         //close database
-        //close database
-        if(database.isOpen() && lockflag && lockflag_2){
-            database.close();
-        }
+
 
     }
 }
@@ -355,11 +459,7 @@ void MainWindow::on_openButton_2_clicked()
         ui->flaglabel_2->setStyleSheet("border-radius:8px;background-color:red;");
 
 
-         //close database
-        //close database
-        if(database.isOpen() && lockflag && lockflag_2){
-            database.close();
-        }
+
     }
 }
 
